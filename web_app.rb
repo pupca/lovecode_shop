@@ -1,16 +1,27 @@
 class WebApplication < Sinatra::Base
 
+	class ItemsUploader < CarrierWave::Uploader::Base
+		# storage :file
+		storage :fog
+		def store_dir
+			"uploads/#{ENV['RACK_ENV']}/#{model.class.to_s.underscore}/#{model.id}"
+		end
+	end
+
 	class ImagesUploader < CarrierWave::Uploader::Base
 		# storage :file
 		storage :fog
 		def store_dir
-  			"uploads/#{ENV['RACK_ENV']}/#{model.id}"
+			"uploads/#{ENV['RACK_ENV']}/#{model.class.to_s.underscore}/#{model.id}"
 		end
 	end
 
 	class Persona < Sequel::Model(:persona)
 		mount_uploader :image, ImagesUploader
+
 		plugin :timestamps, create: :created_at, update: :updated_at, update_on_create: true
+
+		one_to_many :orders
 
 		def get_watson_info
 			age_min_watson = "??"
@@ -35,8 +46,33 @@ class WebApplication < Sinatra::Base
 				self.save
 			end
 		end
+
 		def serealize
 			{hash: self[:hash], age_min: self.age_min, age_max: self.age_max, gender: self.sex, costum_data: self.costum_data, image: self.image.url}
+		end
+
+		def recent_purchases
+			message = []
+			Order.where(persona_id: self.id)
+			orders.each do |order|
+				order.items.each do |item|
+					message << item.serealize(order)
+				end
+			end
+			return message
+		end
+
+		def recommendation
+			message = []
+			recent_purchases = self.recent_purchases
+			recent_purchases_ids = recent_purchases.collect{|item| item[:id]}.uniq
+
+			items = Item.where("id NOT IN ?", recent_purchases_ids)
+			items.each do |item|
+				message << item.serealize
+			end
+
+			return message
 		end
 	end
 
@@ -46,8 +82,17 @@ class WebApplication < Sinatra::Base
 	end
 
 	class Item < Sequel::Model(:items)
+		mount_uploader :image_url, ItemsUploader
 		plugin :timestamps, create: :created_at, update: :updated_at, update_on_create: true
 		many_to_many :orders
+
+		def serealize(order = nil)
+			if order
+				{id: self.id, name: self.name, image: self.image_url.url, category: self.category, price: self.price, purchased_at: order.created_at}
+			else
+				{id: self.id, name: self.name, image: self.image_url.url, category: self.category, price: self.price}
+			end
+		end
 	end
 
 
@@ -106,16 +151,13 @@ class WebApplication < Sinatra::Base
 	post "/persona/:id" do
 		mesage = {}
 		persona = Persona.first(hash: params[:id])
-		if persona
-			ap "found persona"
-		else
-			ap params[:file]
+		unless persona
 			persona = Persona.new(hash: params[:id])
 			persona.image = params[:file]
 			persona.save
 			persona.get_watson_info
 		end	
-		mesage = {message: "person_added", persona: persona.serealize, recent_purchases: {}, recommendation: {}}
+		mesage = {message: "person_added", persona: persona.serealize, recent_purchases: persona.recent_purchases, recommendation: persona.recommendation}
 		Settings.sockets.each{|s| s.send(mesage.to_json) }
 		json OK, mesage.to_json
 	end
@@ -146,5 +188,42 @@ class WebApplication < Sinatra::Base
 
 
 	Dir[Settings.root_path.join 'modules/**/*.rb'].each { |module_path| require module_path }
+
+	get "/s" do
+		persona = Persona.first
+		persona.recommendation
+		json OK, {}
+
+	end
+	get "/seed" do
+		Item.all.collect(&:destroy)
+		Order.all.collect(&:destroy)
+		unless Persona.all.size > 0
+			persona = Persona.create(hash: "pupca", image: Pathname.new(File.dirname(__FILE__) + "/doc/persona01.jpg").open)
+			persona.get_watson_info
+		end
+
+		Settings.database.run("DELETE FROM items_orders;")
+
+		item = Item.create(name: "Denim Jeans", price: 12000, category: "pants", image_url: Pathname.new(File.dirname(__FILE__) + "/doc/01.jpeg").open)
+		item = Item.create(name: "Fuzzy Slippers", price: 80000, category: "shoes", image_url: Pathname.new(File.dirname(__FILE__) + "/doc/02.jpeg").open)
+		item = Item.create(name: "Fancy Hat", price: 4000, category: "accessories", image_url: Pathname.new(File.dirname(__FILE__) + "/doc/03.jpeg").open)
+
+		items = Item.all
+
+		Persona.each do |persona|
+			(rand(5) + 1).times do |number|
+				order = Order.create(persona_id: persona.id)
+				(rand(5) + 1).times do |n|
+					item = items[rand(items.count - 1)]
+					order.add_item(item)
+				end
+			end
+		end
+
+		item = Item.create(name: "Denim Jacket", price: 40000, category: "tops", image_url: Pathname.new(File.dirname(__FILE__) + "/doc/04.jpeg").open)
+		
+		json OK, {}
+	end
 
 end

@@ -38,7 +38,7 @@ Sequel.migration do
         index [:hash]
     end
 
-    create_table :order do
+    create_table :orders do
         primary_key :id
 
         column :persona_id, Integer
@@ -46,15 +46,12 @@ Sequel.migration do
         column :updated_at, 'timestamp without time zone', null: false
     end
 
-    create_table :order_item do
+    create_table :items_orders do
         primary_key :id
 
 
         column :order_id, Integer
         column :item_id, Integer
-
-        column :created_at, 'timestamp without time zone', null: false
-        column :updated_at, 'timestamp without time zone', null: false
     end
 
 end

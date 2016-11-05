@@ -146,7 +146,7 @@ class Settings < Configurator
     configure_sockets
     configure_multi_json
     configure_rollbar
-    get_freemails
+    # get_freemails
     configure_pony
 
     CarrierWave.configure do |config|
