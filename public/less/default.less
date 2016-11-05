@@ -1,0 +1,507 @@
+// main: styles.less
+@white: #FFFFFF;
+@light: #F2F2F2;
+@silver: #8E8E93;
+@ph: #DA552F;
+@blue: #0095F8;
+@red: #FF3B30;
+@black: #1D1F23;
+@font-default: 1.4rem;
+@link: lighten(@blue, 20%);
+
+.btn.btn-action,
+.btn.btn-action:active,
+.btn.btn-action:focus,
+a {
+	text-decoration: none;
+	color: @blue;
+}
+
+.btn.btn-action,
+.btn.btn-action:active,
+.btn.btn-action:focus {
+	background: none;
+}
+
+.producthunt:hover,
+a:hover {
+	color: @link;
+}
+
+h2 {
+	font-size: 6rem;
+}
+
+h3 {
+	font-size: 4.8rem;
+}
+
+h4 {
+	font-size: 2.4rem;
+}
+
+h5 {
+	font-size: @font-default;
+	letter-spacing: 1px;
+}
+
+nav {
+	width: 100%;
+	padding: 10px 20px;
+
+	.tab {
+		.tab-item {
+			margin-right: 1.5rem;
+
+			a {
+				color: @silver;
+
+				&:hover {
+					color: @link;
+				}
+			}
+
+			&:last-child {
+				font-weight: 500;
+
+				a {
+					color: @black;
+
+					&:hover {
+						color: @link;
+					}
+				}
+			}
+		}
+	}
+}
+
+.lead {
+	font-size: 130%;
+}
+
+.p-0 {
+	padding: 0;
+}
+
+.pb-0 {
+	padding-bottom: 0;
+}
+
+.p-100 {
+	padding-left: 100px;
+	padding-right: 100px;
+}
+
+.mt-30 {
+	margin-top: 3rem;
+}
+
+.mt-40 {
+	margin-top: 4rem;
+}
+
+.bg-black,
+.bg-blue,
+.bg-overlay {
+	color: @white;
+
+	p {
+		color: fade(@white, 80%);
+	}
+
+	.btn-action {
+		color: @blue;
+	}
+}
+
+.bg-silver {
+	background: @light;
+}
+
+.bg-blue {
+	background: @blue;
+}
+
+.bg-black {
+	background: @black;
+}
+
+.bg-overlay {
+	background: fade(#000000, 80%);
+}
+
+.text-grey {
+	opacity: .4;
+}
+
+.tab-links {
+	margin: 0;
+
+	.tab-item {
+		border: none;
+
+		&:last-child {
+			margin-right: 0;
+		}
+
+		a {
+			margin: 0;
+			padding: 0;
+		}
+	}
+}
+
+.actions {
+	margin-top: 3rem;
+
+	.btn-action {
+		padding: 0;
+		line-height: normal;
+		height: auto;
+
+		&:hover {
+			background: none;
+			color: @link;
+		}
+
+		.icon {
+			display: inline-block;
+			margin-left: 5px;
+		}
+
+		.icon.icon-video {
+			width: 17px;
+			height: 17px;
+			background: url("../img/icon-video.svg");
+			background-size: cover;
+		}
+
+		.icon.icon-arrow,
+		.icon.icon-arrow-white {
+			width: 6px;
+			height: 15px;
+		}
+
+		.icon.icon-arrow {
+			background: url("../img/icon-arrow.svg") no-repeat center;
+		}
+
+		.icon.icon-arrow-white {
+			background: url("../img/icon-arrow-white.svg") no-repeat center;
+		}
+	}
+}
+
+.producthunt {
+	color: @ph;
+	display: none;
+
+	strong {
+		font-weight: 500;
+	}
+
+	span {
+		line-height: 2.4rem;
+		height: 2.4rem;
+		display: inline-block;
+	}
+
+	&::before {
+		content: "";
+		width: 24px;
+		height: 24px;
+		display: block;
+		background: url("../img/ph.svg");
+		background-size: cover;
+		float: left;
+		margin-right: 1rem;
+	}
+}
+
+.input-group {
+	width: 40rem;
+	margin: 3rem auto 0;
+}
+
+.btn,
+.form-input {
+	.rounded(2px) !important;
+}
+
+.form-input,
+.form-input.input-lg {
+	margin-right: 1.5rem;
+	border: none;
+	background: @light;
+	color: @black;
+	font-size: 1.4rem;
+	padding: 1.1rem;
+
+	&:focus {
+		background: white;
+		.box-shadow(0 0 12px @silver inset);
+	}
+
+	&[placeholder] {
+		color: @silver;
+	}
+}
+
+.btn,
+.btn.btn-lg {
+	background: @blue;
+	font-size: 1.4rem;
+	border: none;
+	padding: 1.1rem 2.7rem;
+	font-weight: 500;
+
+	&:hover {
+		background: fade(@blue, 80%);
+	}
+
+	&:active {
+		background: darken(@blue, 15%);
+	}
+
+	&:focus {
+		background: darken(@blue, 10%);
+	}
+}
+
+#basic,
+#benefits,
+#features,
+#footer,
+#hero,
+#product .overlay,
+#vision,
+#whybeam {
+	.flex-display();
+	.align-items(center);
+}
+
+#basic {
+	height: 100vh;
+}
+
+#hero {
+	.justify-content(center);
+	height: 70vh;
+	min-height: 512px;
+
+	#waitlist {
+		.slack {
+			color: @silver;
+			height: 21px;
+			line-height: 21px;
+
+			a {
+				color: @black;
+
+				&::after {
+					content: "";
+					display: inline-block;
+					width: 18px;
+					height: 18px;
+					background: url("../img/slack.svg");
+					background-size: cover;
+					position: absolute;
+					margin-left: 5px;
+				}
+			}
+		}
+	}
+
+	#waitlist.fail {
+		.form-input {
+			background: lighten(@red, 35%);
+		}
+
+		.form-input[placeholder] {
+			color: @red;
+		}
+
+		.form-input:focus[placeholder] {
+			color: @silver;
+		}
+
+		.btn.disabled {
+			background: fade(@silver, 20%);
+			color: @silver;
+		}
+	}
+}
+
+#product {
+	padding-left: 0;
+	padding-right: 0;
+
+	.video {
+		min-width: 1440px;
+		width: 100%;
+		height: 100%;
+		left: 50%;
+		-webkit-transform: translate(-50%,0 );
+		transform: translate(-50%, 0);
+
+		img {
+			width: 100%;
+			height: 100%;
+		}
+
+	}
+
+	.overlay {
+		bottom: 0;
+		padding: 6.5rem 0 8rem;
+
+		.feature {
+			width: 40px;
+			height: 40px;
+			background: url("../img/feature-01.svg");
+			background-size: cover;
+		}
+
+		.active {
+			opacity: .4;
+		}
+	}
+}
+
+#whybeam {
+	padding: 12rem 0;
+
+	.columns {
+		display: table;
+		height: 100%;
+	}
+
+	.col-5 {
+		z-index: 1;
+		right: -700px;
+		display: table-cell;
+		vertical-align: middle;
+	}
+
+	.col-7 {
+		padding: 0;
+		height: 881px;
+	}
+
+	.hero-whybeam {
+		left: -826px;
+		width: 1532px;
+		height: 881px;
+		background: url("../img/macbook.jpg");
+		background-size: 1532px 881px;
+		margin: 0;
+	}
+}
+
+#benefits {
+	padding: 8rem 0 7rem;
+}
+
+#features {
+	padding: 8rem 0;
+
+	ul {
+		list-style: disc outside;
+
+		li {
+			font-size: 130%;
+			margin: 0 2rem 2rem;
+		}
+	}
+}
+
+#vision {
+	padding: 3rem 0 4rem;
+	background: url("../img/vision.jpg");
+	background-size: cover;
+
+	header {
+		z-index: 1;
+	}
+
+	.btn-action {
+		color: @white;
+
+		&:hover {
+			color: darken(@white, 20%);
+		}
+	}
+
+	::after {
+		contet: "";
+		background: fade(@black, 40%);
+		width: 100%;
+		height: 100%;
+		position: absolute;
+		left: 0;
+		top: 0;
+		display: block;
+	}
+}
+
+#footer {
+	padding: 8.5rem 0 5rem;
+
+	h2 {
+		font-size: 14.4rem;
+		font-weight: lighter;
+	}
+
+	p {
+		color: fade(@white, 20%);
+	}
+
+	.divider {
+		margin: 6rem 0 1rem;
+		border-color: fade(@white, 10%);
+	}
+
+	.column:last-of-type > .columns {
+		margin-top: 9rem;
+
+		.column {
+			padding: 0;
+		}
+	}
+
+	li {
+		margin: 0 0 0 1.5rem;
+
+		a {
+			color: @silver;
+
+			&:hover {
+				color: lighten(@silver, 20%);
+			}
+		}
+	}
+}
+
+.keyframes(@name; @arguments) {
+	@-moz-keyframes @name {
+		 @arguments();
+	}
+	@-webkit-keyframes @name {
+		 @arguments();
+	}
+	@keyframes @name {
+		 @arguments();
+	}
+}
+
+.animation(@arguments) {
+	-webkit-animation: @arguments;
+	-moz-animation: @arguments;
+	animation: @arguments;
+}
+
+.form-input:focus {
+	.keyframes(fade-in;{ 0% { .box-shadow(0 0 8px lighten(@blue, 20%)); } 50% { .box-shadow(0 0 32px lighten(@blue, 20%)); } 100% { .box-shadow(0 0 8px lighten(@blue, 20%)); } });
+	.animation(fade-in 1s ease-in-out infinite);
+}
