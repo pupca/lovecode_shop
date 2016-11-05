@@ -183,7 +183,7 @@ class WebApplication < Sinatra::Base
 		end
 
 		mesage = {type: "person_added", data: {persona: persona.serealize, recent_purchases: persona.recent_purchases, recommendation: persona.recommendation}}
-		if persona.last_seen_at < Time.now - 1.minute
+		if persona.last_seen_at < Time.now - 1.second
 			puts "Sending Socket!!!!!!!!!"
 			Settings.sockets.each{|s| s.send(mesage.to_json) }
 		end
