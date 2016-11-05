@@ -48,7 +48,7 @@ class WebApplication < Sinatra::Base
 		end
 
 		def serealize
-			{hash: self[:hash], email: self.email, name: self.name , age_min: self.age_min, age_max: self.age_max, gender: self.sex, custom_data: self.custom_data, image: self.image.url, celebrity: self.celebrity}
+			{hash: self[:hash], email: self.email, name: self.name , age_min: self.age_min, age_max: self.age_max, gender: self.sex, custom_data: JSON.parse(self.custom_data), image: self.image.url, celebrity: self.celebrity}
 		end
 
 		def recent_purchases
@@ -165,7 +165,7 @@ class WebApplication < Sinatra::Base
 			persona.name = params[:persona][:name] if params[:persona][:name]
 			persona.email = params[:persona][:email] if params[:persona][:email]
 			persona.celebrity = params[:persona][:celebrity] if params[:persona][:celebrity]
-			persona.custom_data = params[:persona][:custom_data] if params[:persona][:custom_data]
+			persona.custom_data = params[:persona][:custom_data].to_json if params[:persona][:custom_data]
 			persona.save
 		end
 
