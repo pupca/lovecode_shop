@@ -48,7 +48,7 @@ class WebApplication < Sinatra::Base
 		end
 
 		def serealize
-			{hash: self[:hash], age_min: self.age_min, age_max: self.age_max, gender: self.sex, costum_data: self.costum_data, image: self.image.url}
+			{hash: self[:hash], age_min: self.age_min, age_max: self.age_max, gender: self.sex, custom_data: self.custom_data, image: self.image.url}
 		end
 
 		def recent_purchases
@@ -67,7 +67,11 @@ class WebApplication < Sinatra::Base
 			recent_purchases = self.recent_purchases
 			recent_purchases_ids = recent_purchases.collect{|item| item[:id]}.uniq
 
+			if recent_purchases_ids.size > 0
 			items = Item.where("id NOT IN ?", recent_purchases_ids)
+			else
+			items = Item.all
+			end
 			items.each do |item|
 				message << item.serealize
 			end
@@ -88,9 +92,9 @@ class WebApplication < Sinatra::Base
 
 		def serealize(order = nil)
 			if order
-				{id: self.id, name: self.name, image: self.image_url.url, category: self.category, price: self.price, purchased_at: order.created_at}
+				{id: self.id, name: self.name, image: self.image_url.url, category: self.category, price: self.price, purchased_at: order.created_at, created_at: self.created_at}
 			else
-				{id: self.id, name: self.name, image: self.image_url.url, category: self.category, price: self.price}
+				{id: self.id, name: self.name, image: self.image_url.url, category: self.category, price: self.price, created_at: self.created_at}
 			end
 		end
 	end
@@ -145,26 +149,48 @@ class WebApplication < Sinatra::Base
 
 	post "/persona/checkout/:id" do
 		persona = Persona.first(hash: params[:id])
-		mesage = {message: "person_removed", persona: persona.serealize}
+
+		if params[:persona]
+			persona.name = params[:persona][:name] if params[:persona][:name]
+			persona.email = params[:persona][:email] if params[:persona][:email]
+			persona.custom_data = params[:persona][:custom_data] if params[:persona][:custom_data]
+			persona.save
+		end
+
+		items = params[:items]
+		if items && items.size > 0
+			order = Order.new(persona_id: persona.id)
+			items.each do |item_id|
+				item = Item.first(id: item_id)
+				if item
+					order.add_item(item)
+				end
+			end
+		end
+		mesage = {type: "person_removed", data: {persona: persona.serealize}}
+		Settings.sockets.each{|s| s.send(mesage.to_json) }
+		json OK, mesage.to_json
 	end 
 
 	post "/persona/:id" do
 		mesage = {}
 		persona = Persona.first(hash: params[:id])
 		unless persona
-			persona = Persona.new(hash: params[:id])
+			persona = Persona.new(hash: params[:id], last_seen_at: Time.now)
 			persona.image = params[:file]
 			persona.save
 			persona.get_watson_info
-		end	
-		mesage = {message: "person_added", persona: persona.serealize, recent_purchases: persona.recent_purchases, recommendation: persona.recommendation}
-		Settings.sockets.each{|s| s.send(mesage.to_json) }
+		end
+
+		mesage = {type: "person_added", data: {persona: persona.serealize, recent_purchases: persona.recent_purchases, recommendation: persona.recommendation}}
+		if persona.last_seen_at < Time.now - 1.minute
+			ap "Sending Socket"
+			Settings.sockets.each{|s| s.send(mesage.to_json) }
+		end
+		persona.update(last_seen_at: Time.now)		
 		json OK, mesage.to_json
 	end
 
-	post "/checkout" do
-
-	end
 
 	get '/' do
 		if !request.websocket?
@@ -195,11 +221,16 @@ class WebApplication < Sinatra::Base
 		json OK, {}
 
 	end
+
+	get "/camera" do
+		erb :camera
+	end
+
 	get "/seed" do
 		Item.all.collect(&:destroy)
 		Order.all.collect(&:destroy)
 		unless Persona.all.size > 0
-			persona = Persona.create(hash: "pupca", image: Pathname.new(File.dirname(__FILE__) + "/doc/persona01.jpg").open)
+			persona = Persona.create(hash: "pupca", last_seen_at: Time.now, image: Pathname.new(File.dirname(__FILE__) + "/doc/persona01.jpg").open)
 			persona.get_watson_info
 		end
 

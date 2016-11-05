@@ -1,1 +1,4 @@
-curl -F "image=@/Users/pupca/Desktop/3850e3a.jpg" https://lovecode-store.herokuapp.com/persona/pupca
+curl -F "file=@/Users/pupca/Desktop/3850e3a.jpg" https://lovecode-store.herokuapp.com/persona/pupca
+curl -F "file=@/Users/pupca/Desktop/3850e3a.jpg" http://localhost:5001/persona/pupca
+foreman run rake db:reset && foreman run rake db:migrate 
+foreman start

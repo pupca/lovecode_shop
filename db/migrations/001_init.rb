@@ -29,9 +29,11 @@ Sequel.migration do
         column :sex, String, null: true
         column :image, String, null: true
 
-        column :costum_data, "json", default: "{}"
+        column :custom_data, "json", default: "{}"
 
         column :celebrity, "boolean", default: false
+        
+        column :last_seen_at, 'timestamp without time zone', null: false
     	column :created_at, 'timestamp without time zone', null: false
     	column :updated_at, 'timestamp without time zone', null: false
 
