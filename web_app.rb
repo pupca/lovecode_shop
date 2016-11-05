@@ -62,7 +62,7 @@ class WebApplication < Sinatra::Base
 			return message
 		end
 
-		def inventory
+		def self.inventory
 			message = []
 		
 			items = Item.all
@@ -181,7 +181,7 @@ class WebApplication < Sinatra::Base
 		end
 		mesage = {type: "person_removed", data: {persona: persona.serealize}}
 		Settings.sockets.each{|s| s.send(mesage.to_json) }
-		json OK, mesage.to_json
+		json OK, mesage
 	end 
 
 	post "/persona/:id" do
@@ -194,7 +194,7 @@ class WebApplication < Sinatra::Base
 			persona.get_watson_info
 		end
 
-		mesage = {type: "person_added", data: {persona: persona.serealize, recent_purchases: persona.recent_purchases, recommendation: persona.recommendation, inventory: persona.inventory}}
+		mesage = {type: "person_added", data: {persona: persona.serealize, recent_purchases: persona.recent_purchases, recommendation: persona.recommendation, inventory: Persona.inventory}}
 		if persona.last_seen_at < Time.now - 1.second
 			puts "Sending Socket!!!!!!!!!"
 			Settings.sockets.each{|s| s.send(mesage.to_json) }
@@ -203,6 +203,9 @@ class WebApplication < Sinatra::Base
 		json OK, mesage.to_json
 	end
 
+	get '/inventory.json' do		
+		json OK, Persona.inventory
+	end
 
 	get '/' do
 		if !request.websocket?
