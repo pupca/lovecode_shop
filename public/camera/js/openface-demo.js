@@ -208,7 +208,7 @@ function createSocket(address, name) {
             $("#peopleInVideo").html(h);
         } else if (j.type == "ANNOTATED") {
             $("#detectedFaces").html(
-                "<img src='" + j['content'] + "' width='430px'></img>"
+                "<img src='" + j['content'] + "' class='recognized_img'></img>"
             )
         } else if (j.type == "TSNE_DATA") {
             BootstrapDialog.show({

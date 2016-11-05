@@ -48,7 +48,7 @@ class WebApplication < Sinatra::Base
 		end
 
 		def serealize
-			{hash: self[:hash], age_min: self.age_min, age_max: self.age_max, gender: self.sex, custom_data: self.custom_data, image: self.image.url}
+			{hash: self[:hash], email: self.email, name: self.name , age_min: self.age_min, age_max: self.age_max, gender: self.sex, custom_data: self.custom_data, image: self.image.url, celebrity: self.celebrity}
 		end
 
 		def recent_purchases
@@ -151,15 +151,17 @@ class WebApplication < Sinatra::Base
 		persona = Persona.first(hash: params[:id])
 
 		if params[:persona]
+			ap params[:persona]
 			persona.name = params[:persona][:name] if params[:persona][:name]
 			persona.email = params[:persona][:email] if params[:persona][:email]
+			persona.celebrity = params[:persona][:celebrity] if params[:persona][:celebrity]
 			persona.custom_data = params[:persona][:custom_data] if params[:persona][:custom_data]
 			persona.save
 		end
 
 		items = params[:items]
 		if items && items.size > 0
-			order = Order.new(persona_id: persona.id)
+			order = Order.create(persona_id: persona.id)
 			items.each do |item_id|
 				item = Item.first(id: item_id)
 				if item
@@ -182,7 +184,7 @@ class WebApplication < Sinatra::Base
 			persona.get_watson_info
 		end
 
-		mesage = {type: "person_added", data: {persona: persona.serealize, recent_purchases: persona.recent_purchases, recommendation: persona.recommendation}}
+		mesage = {type: "person_added", data: {persona: persona.serealize, recent_purchases: persona.recent_purchases, recommendation: persona.recommendation, inventory: persona.inventory}}
 		if persona.last_seen_at < Time.now - 1.second
 			puts "Sending Socket!!!!!!!!!"
 			Settings.sockets.each{|s| s.send(mesage.to_json) }

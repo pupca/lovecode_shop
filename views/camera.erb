@@ -20,7 +20,7 @@ limitations under the License.
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Face Recognition</title>
+        <title>SocialBakers LoveCode CameraStore</title>
         <link href="camera/vendor/css/bootstrap.min.css" rel="stylesheet">
         <link href="camera/vendor/css/bootstrap-toggle.min.css" rel="stylesheet">
         <link href="camera/vendor/css/bootstrap-dialog.min.css" rel="stylesheet">
@@ -28,77 +28,20 @@ limitations under the License.
     </head>
     <body>
         <div class="container">
-            <div class="header">
-                <ul class='tabs'>
-                    <li class='tab-link' data-tab='tab-preview'
-                        id='tab-preview-button'>
-                        Preview
-                    </li>
-                    <li class='tab-link current' data-tab='tab-annotated'
-                        id='tab-annotated-button'>
-                        Annotated
-                    </li>
-                </ul>
-                <div id='tab-preview' class='tab-content'>
-                    <video id="videoel" width="400" height="300"
-                           preload="auto" loop></video>
-                </div>
-                <div id='tab-annotated' class='tab-content current'>
-                    <div id="detectedFaces"></div>
-                </div>
-            </div>
             <div class="content">
+                <div style="display:none">
+                <video id="videoel" width="400" height="300" preload="auto" loop></video>
+                </div>
+                <div id="detectedFaces" style="text-align: center;height: 600px;">
+                    
+                </div>
                 <h2>People in Video</h2>
                 <div id="peopleInVideo"></div>
 
-                <h2>Servers: <span id="serverStatus"></span></h2>
-                <!-- <div id="serverStatus"></div> -->
-                <div class="btn-group" role="group" id="serverBtn">
-                    <button type="button" class="btn btn-default active">Local</button>
-                    <!--
-                    <button type="button" class="btn btn-default">CMU</button>
-                    <button type="button" class="btn btn-default">AWS East</button>
-                    <button type="button" class="btn btn-default">AWS West</button>
-                    -->
-                </div>
 
-                <!--
-                <h3>Null Server RTTs</h3>
-                <ul>
-                    <li>
-                        <b>CMU:</b> <span id="rtt-CMU">Not yet used.</span>
-                    </li>
-                    <li>
-                        <b>AWS East:</b> <span id="rtt-AWS-East">Not yet used.</span>
-                    </li>
-                    <li>
-                        <b>AWS West:</b> <span id="rtt-AWS-West">Not yet used.</span>
-                    </li>
-                </ul>
-                -->
 
-                <h2>Training
-                    <input type="checkbox" checked data-toggle="toggle"
-                           id="trainingChk">
-                </h2>
-                <div class="input-group addPersonDiv">
-                    <input type="text" class="form-control" id="addPersonTxt">
-                    <span class="input-group-btn">
-                        <button class="btn btn-default" type="button"
-                                id="addPersonBtn">
-                            Add Person
-                        </button>
-                    </span>
-                </div>
+
                 <br/>
-                <div>
-                    <button class="btn btn-default" type="button"
-                            id="viewTSNEBtn">
-                        Visualize with TSNE
-                    </button>
-                </div>
-                <br/>
-                <div class="dropdown" id="defaultPersonDropdown"></div>
                 <script id="defaultPersonTmpl" type="text/x-handlebars-template">
                     <button class="btn btn-default dropdown-toggle"
                             type="button" id="defaultPersonDropdownBtn"
@@ -120,16 +63,7 @@ limitations under the License.
                         {{/each}}
                     </ul>
                 </script>
-
-                <br/>
-
-                <ul id="peopleInfo"></ul>
-
-                <br/>
-
-                <table class="table table-striped table-hover table-condensed"
-                       id="peopleTable">
-                </table>
+            
                 <script id="peopleTableTmpl" type="text/x-handlebars-template">
                     <thead><tr>
                         <th></th>
