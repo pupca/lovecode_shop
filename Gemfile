@@ -26,6 +26,7 @@ gem 'carrierwave-sequel', :require => 'carrierwave/sequel'
 gem 'carrierwave'
 gem 'watson-api-client'
 gem "fog-aws"
+gem 'data_uri'
 
 group :development do
   # An IRB alternative and runtime developer console

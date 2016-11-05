@@ -1,4 +1,13 @@
 class WebApplication < Sinatra::Base
+	class CarrierStringIO < StringIO
+		def original_filename
+			"photo.png"
+		end
+
+		def content_type
+			"image/png"
+		end
+	end
 
 	class ItemsUploader < CarrierWave::Uploader::Base
 		# storage :file
@@ -64,7 +73,7 @@ class WebApplication < Sinatra::Base
 
 		def self.inventory
 			message = []
-		
+
 			items = Item.all
 			items.each do |item|
 				message << item.serealize
@@ -78,12 +87,12 @@ class WebApplication < Sinatra::Base
 			recent_purchases_ids = recent_purchases.collect{|item| item[:id]}.uniq
 
 			if recent_purchases_ids.size > 0
-			items = Item.where("id NOT IN ?", recent_purchases_ids)
+				items = Item.where("id NOT IN ?", recent_purchases_ids)
 			else
-			items = Item.all
+				items = Item.all
 			end
 			items.each do |item|
-				message << item.serealize
+				message << item.serealize_recommendation(self.id)
 			end
 
 			return message
@@ -99,6 +108,15 @@ class WebApplication < Sinatra::Base
 		mount_uploader :image_url, ItemsUploader
 		plugin :timestamps, create: :created_at, update: :updated_at, update_on_create: true
 		many_to_many :orders
+
+		def get_recomendation_text(user_id)
+			choices = ["Based on recent purchaces", "Top seller of customer gender", "Top seller based on customer age", "Top seller based on customer age and gender"]
+			return choices[(self.id + user_id) % choices.count]
+		end
+
+		def serealize_recommendation(user_id)
+			{id: self.id, name: self.name, image: self.image_url.url, category: self.category, price: self.price, created_at: self.created_at, recommendation_text: self.get_recomendation_text(user_id)}
+		end
 
 		def serealize(order = nil)
 			if order
@@ -183,6 +201,32 @@ class WebApplication < Sinatra::Base
 		Settings.sockets.each{|s| s.send(mesage.to_json) }
 		json OK, mesage
 	end 
+
+	post "/persona64/:id" do
+
+		mesage = {}
+		persona = Persona.first(hash: params[:id])
+		unless persona
+			io = URI::Data.new(URI.decode(params[:photo]))
+			File.open("/tmp/#{params[:id]}.png", 'wb') do |f|
+	    		f.write(io.data)
+			end
+
+			persona = Persona.create(hash: params[:id], last_seen_at: Time.now - 1.year)
+			persona.image = Pathname.new("/tmp/#{params[:id]}.png").open
+			persona.save
+			persona.get_watson_info
+		end
+
+		mesage = {type: "person_added", data: {persona: persona.serealize, recent_purchases: persona.recent_purchases, recommendation: persona.recommendation, inventory: Persona.inventory}}
+		if persona.last_seen_at < Time.now - 5.second
+			puts "Sending Socket!!!!!!!!!"
+			Settings.sockets.each{|s| s.send(mesage.to_json) }
+		end
+		persona.update(last_seen_at: Time.now)		
+		json OK, mesage.to_json
+
+	end
 
 	post "/persona/:id" do
 		mesage = {}
