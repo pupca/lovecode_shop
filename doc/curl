@@ -2,3 +2,9 @@ curl -F "file=@/Users/pupca/Desktop/3850e3a.jpg" https://lovecode-store.herokuap
 curl -F "file=@/Users/pupca/Desktop/3850e3a.jpg" http://localhost:5001/persona/pupca
 foreman run rake db:reset && foreman run rake db:migrate 
 foreman start
+
+
+## Persona Checkout
+curl -X "POST" "https://lovecode-store.herokuapp.com/persona/checkout/pupca" \
+     -H "Content-Type: application/json; charset=utf-8" \
+     -d "{\"persona\":{\"name\":\"Martin Popelak\",\"email\":\"pupca@pupca.cz\",\"celebrity\":\"true\",\"custom_data\":\"{\\\"shirt_size\\\":\\\"L\\\",\\\"shoe_size\\\":\\\"43\\\",\\\"waist_size\\\":\\\"33\\\"}\"},\"items\":[\"2\",\"3\"]}"

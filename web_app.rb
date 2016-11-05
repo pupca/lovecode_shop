@@ -62,6 +62,16 @@ class WebApplication < Sinatra::Base
 			return message
 		end
 
+		def inventory
+			message = []
+		
+			items = Item.all
+			items.each do |item|
+				message << item.serealize
+			end
+			return message
+		end
+
 		def recommendation
 			message = []
 			recent_purchases = self.recent_purchases
