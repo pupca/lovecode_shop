@@ -109,6 +109,7 @@ class WebApplication < Sinatra::Base
 		if persona
 			ap "found persona"
 		else
+			ap params[:file]
 			persona = Persona.new(hash: params[:id])
 			persona.image = params[:file]
 			persona.save
