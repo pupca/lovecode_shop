@@ -17,6 +17,7 @@ class WebApplication < Sinatra::Base
 			age_max_watson = "??"
 			gender_watson = "??"
 			begin
+				ap ENV["WATSON_API"]
 				service = WatsonAPIClient::VisualRecognition.new(:api_key=> ENV["WATSON_API"], :version=>'2016-05-20')
 				object = JSON.parse(service.detect_faces('url'=> self.image.url))
 
@@ -25,6 +26,8 @@ class WebApplication < Sinatra::Base
 				age_min_watson = face["age"]["min"]
 				age_max_watson = face["age"]["max"]
 				gender_watson = face["gender"]["gender"]
+			rescue => e
+				ap "error #{e}"
 			ensure
 				self.age_min = age_min_watson
 				self.age_max = age_max_watson
