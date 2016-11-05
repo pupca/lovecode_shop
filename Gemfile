@@ -15,7 +15,6 @@ gem 'pg'
 gem 'foreman'
 gem 'ice_nine'
 gem 'sequel_postgresql_triggers'
-gem "awesome_print"
 gem 'rack-parser', require: 'rack/parser'
 gem 'multi_json'
 gem 'less'
@@ -26,6 +25,7 @@ gem 'thin'
 gem 'carrierwave-sequel', :require => 'carrierwave/sequel'
 gem 'carrierwave'
 gem 'watson-api-client'
+gem "fog-aws"
 
 group :development do
   # An IRB alternative and runtime developer console

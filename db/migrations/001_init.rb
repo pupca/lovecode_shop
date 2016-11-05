@@ -24,7 +24,8 @@ Sequel.migration do
         column :hash, String, null: true
         column :name, String, null: true
         column :email, String, null: true
-        column :age, String, null: true
+        column :age_min, String, null: true
+        column :age_max, String, null: true
         column :sex, String, null: true
         column :image, String, null: true
 

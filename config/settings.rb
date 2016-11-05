@@ -153,6 +153,17 @@ class Settings < Configurator
       config.root = File.dirname(__FILE__) + "/../public"
     end
 
+    CarrierWave.configure do |config|
+  config.fog_credentials = {
+    provider:              'AWS',                        # required
+    aws_access_key_id:     ENV['AWSAccessKeyId'],                        # required
+    aws_secret_access_key: ENV['AWSSecretKey'],                        # required
+    region:                'eu-west-1'
+  }
+  config.fog_directory  = 'codelove-stor'                          # required
+  config.fog_public     = true
+end
+
 
   end
 end
