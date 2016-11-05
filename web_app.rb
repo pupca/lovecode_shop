@@ -176,7 +176,7 @@ class WebApplication < Sinatra::Base
 		mesage = {}
 		persona = Persona.first(hash: params[:id])
 		unless persona
-			persona = Persona.new(hash: params[:id], last_seen_at: Time.now)
+			persona = Persona.new(hash: params[:id], last_seen_at: Time.now - 1.year)
 			persona.image = params[:file]
 			persona.save
 			persona.get_watson_info
@@ -184,7 +184,7 @@ class WebApplication < Sinatra::Base
 
 		mesage = {type: "person_added", data: {persona: persona.serealize, recent_purchases: persona.recent_purchases, recommendation: persona.recommendation}}
 		if persona.last_seen_at < Time.now - 1.minute
-			ap "Sending Socket"
+			puts "Sending Socket!!!!!!!!!"
 			Settings.sockets.each{|s| s.send(mesage.to_json) }
 		end
 		persona.update(last_seen_at: Time.now)		
