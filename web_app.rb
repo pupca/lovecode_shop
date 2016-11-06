@@ -208,14 +208,15 @@ class WebApplication < Sinatra::Base
 		persona = Persona.first(hash: params[:id])
 		unless persona
 			io = URI::Data.new(URI.decode(params[:photo]))
-			File.open("/tmp/#{params[:id]}.png", 'wb') do |f|
+			File.open("tmp/#{params[:id]}.png", 'wb') do |f|
 	    		f.write(io.data)
 			end
 
 			persona = Persona.create(hash: params[:id], last_seen_at: Time.now - 1.year)
-			persona.image = Pathname.new("/tmp/#{params[:id]}.png").open
+			persona.image = Pathname.new("tmp/#{params[:id]}.png").open
 			persona.save
 			persona.get_watson_info
+			ap persona.image.url
 		end
 
 		mesage = {type: "person_added", data: {persona: persona.serealize, recent_purchases: persona.recent_purchases, recommendation: persona.recommendation, inventory: Persona.inventory}}
@@ -223,8 +224,9 @@ class WebApplication < Sinatra::Base
 			puts "Sending Socket!!!!!!!!!"
 			Settings.sockets.each{|s| s.send(mesage.to_json) }
 		end
+
 		persona.update(last_seen_at: Time.now)		
-		json OK, mesage.to_json
+		json OK, {name: persona.name ? persona.name : "New Customer", age: "#{persona.age_min} - #{persona.age_max}", gender: persona.sex}
 
 	end
 
