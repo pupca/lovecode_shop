@@ -199,28 +199,23 @@ class WebApplication < Sinatra::Base
 		end
 		mesage = {type: "person_removed", data: {persona: persona.serealize}}
 		Settings.sockets.each{|s| s.send(mesage.to_json) }
-		json OK, mesage
+		json OK, mesage.to_json
 	end 
 
 	post "/persona64/:id" do
-		puts "jedna"
 		mesage = {}
 		persona = Persona.first(hash: params[:id])
-		puts "dva"
 		unless persona
-			puts "tru"
 			io = URI::Data.new(URI.decode(params[:photo]))
 			File.open("tmp/#{params[:id]}.png", 'wb') do |f|
 	    		f.write(io.data)
 			end
-			puts "ctyry"
 			persona = Persona.create(hash: params[:id], last_seen_at: Time.now - 1.year)
 			persona.image = Pathname.new("tmp/#{params[:id]}.png").open
 			persona.save
 			persona.get_watson_info
 			ap persona.image.url
 		end
-		puts "pet"
 		mesage = {type: "person_added", data: {persona: persona.serealize, recent_purchases: persona.recent_purchases, recommendation: persona.recommendation, inventory: Persona.inventory}}
 		if persona.last_seen_at < Time.now - 5.second
 			puts "Sending Socket!!!!!!!!!"
